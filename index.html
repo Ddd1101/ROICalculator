@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+        <script type="text/javascript" src="index.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="index.css">
+        <script type="text/javascript" src='./xlsx.full.min.js'></script>
+	</head>
+
+	<body>
+        <!-- <input id="date_info" type="date" style="font-size: 20px;font-weight:bold;">
+
+        <br><br>
+
+        客户：
+        <select id="customers" style="font-size: 20px;font-weight:bold;">
+            <option  value="小眉" selected="selected">小眉</option>
+          </select>
+
+          <br><br>
+
+        <form id='products' action="" name= "products" method="">
+            <table id="tb1" border="1" style="text-align: center;">
+                <thead>
+                    <th>_____品名_____</th>
+                    <th>_____单价_____</th>
+                    <th>_____规格_____</th>
+                    <th>_____数量_____</th>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>吊带背心</td>
+                        <td name="diaodaibeixin_p" value="4.8">4.8</td>
+                        <td>均价</td>
+                        <td><input type="text"   name="diaodaibeixin"  style="float:right"></td>
+                    </tr>
+                </tbody>
+            
+            </table>
+            <br><br>
+            <input type="submit" value="计算" onclick="return CalculateSum();">__货款总额_ : <textarea name="sumPrice" readonly="readonly" style="font-size: 20px; color: red; height: 24px;">0</textarea>
+            <br><br>
+            <input type="submit" value="表格清空" onclick="return true;">
+            <br><br>
+            <button type="button" id="saveData" >保存结果</button>
+        </form> -->
+
+        <input type="file" onchange="readExcel(this)" />
+
+        <br><br>
+
+        货号
+        <select id="sel" onchange="goodChange()">
+            <option value ="volvo">Volvo</option>
+            <option value ="saab">Saab</option>
+            <option value="opel">Opel</option>
+            <option value="audi">Audi</option>
+        </select>
+
+        尺码
+        <select id="sel2" onchange="setSalePrice()">
+        </select>
+
+        <br><br>
+
+        售价 ： <input type="text"   id="i1" > 产品定价
+        <br><br>
+
+        成本 ： <input type="text"   id="i2" readonly="readonly"> 进货成本
+        <br><br>
+
+        邮费+物料成本 ： <input type="text"   id="i3" > 发货成本+包装成本
+        <br><br>
+
+        利润 ： <input type="text" id="i4" readonly="readonly"> 自动生成当下产品的sku或者毛利润
+        <br><br>
+
+        毛利润 ： <input type="text" id="i5" readonly="readonly"> 自动生成当下产品的sku或者毛利率
+        <br><br>
+
+        ROI平衡点 ： <input type="text" id="i6" readonly="readonly"> 你的ROI到底多少不亏呢？
+        <br><br>
+
+        目前ROI ： <input type="text" id="i7"> 填写当前计划的投入产品比，建议至少7天数据
+        <br><br>
+
+        盈亏结果判断 ： <input type="text"   id="i8" readonly="readonly"> 建议;如果不认亏，逐步降价，直到盈亏平衡
+        <br><br>
+
+        <button type="button" id="cal" >计算</button>
+
+        <script>
+            let goodsList = new Array();
+
+            let jsonRes;
+
+            let size = ["90cm", "100", "110","120", "130", "140", "150", "160", "165", "170", "175", "180", "S", "M", "L", "XL", "XXL"];
+
+            function readExcel(file_obj){
+                var reader = new FileReader();
+                var file = file_obj.files[0];
+                reader.readAsBinaryString(file);
+                
+                reader.onload = function (e) {
+                    var data = e.target.result;
+                    var wb = XLSX.read(data, {type: 'binary'});
+
+                    sheetName = wb.SheetNames[0]   // 获取文档中第一个sheet页签的名字
+                    sheets = wb.Sheets[sheetName]   // 获sheet名页签下的数据
+                    
+                    // console.log(sheets);   // 返回sheet对象到控制台
+                    console.log(sheets.A12.v)
+
+                    jsonRes = JSON.parse(JSON.stringify(XLSX.utils.sheet_to_json(sheets)));
+
+                    // console.log(jsonRes);
+
+                    for(let i = 0; i < jsonRes.length; ++i){
+                        goodsList.push(jsonRes[i]['商品']);
+                    }
+                    addSelection();
+                };
+            }
+
+            function addSelection(){
+                var objSelect = document.getElementById("sel");
+
+                // 删除所有
+                objSelect.options.length = 0;
+                
+                // 逐个添加
+                for(let i = 0; i < goodsList.length; ++i){
+                    objSelect.options.add(new Option(goodsList[i], i));
+                }
+            }
+
+            function goodChange(){
+                let objSelect = document.getElementById("sel");
+
+                let index = objSelect.options[objSelect.selectedIndex].value;
+
+                // console.log(index);
+
+                // console.log(objSelect.selectedIndex);
+
+                // console.log(jsonRes[objSelect.selectedIndex])
+
+                jsonObj = jsonRes[objSelect.selectedIndex]
+                
+                sizeSelection = []
+
+                let objSelect2 = document.getElementById("sel2");
+                objSelect2.options.length = 0;
+
+                for(var key in jsonObj){
+                    if(size.includes(key)){
+                        objSelect2.options.add(new Option(key, jsonObj[key]));
+                    }
+                }
+                
+            }
+
+            function setSalePrice(){
+                let objSelect = document.getElementById("sel2");
+
+                let salePrice = objSelect.options[objSelect.selectedIndex].value;
+
+                console.log(salePrice);
+                
+                document.getElementById("i2").value = salePrice;
+            }
+
+            function calculate(){
+                // 输入
+                let i1V = document.getElementById("i1").value;
+                let i2V = document.getElementById("i2").value;
+                let i3V = document.getElementById("i3").value;
+
+                let i8V = document.getElementById("i8").value;
+
+                // 输出
+                let i4V = i1V - i2V - i3V;
+                let i5V = (i4V * i1V)/100; 
+                let i6V = i1V / i4V;
+
+
+                document.getElementById("i4").value = i4V.toFixed(4);
+                document.getElementById("i5").value = i5V.toFixed(4);
+                document.getElementById("i6").value = i6V.toFixed(4);
+            }
+
+            $(document).ready(function () {
+                var time = new Date();
+                var day = ("0" + time.getDate()).slice(-2);
+                var month = ("0" + (time.getMonth() + 1)).slice(-2);
+                var today = time.getFullYear() + "-" + (month) + "-" + (day);
+                $('#date_info').val(today);
+            })
+
+            var btn = document.getElementById("cal");
+            btn.addEventListener('click',function(){
+                calculate();
+            },false)
+        </script>
+	</body>
+
+    <script>
+       
+    </script>
+</html>
