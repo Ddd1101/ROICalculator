@@ -75,13 +75,13 @@
         邮费+物料成本 ： <input type="text"   id="i3" > 发货成本+包装成本
         <br><br>
 
-        利润 ： <input type="text" id="i4" readonly="readonly"> 自动生成当下产品的sku或者毛利润
+        利润 ： <input type="text" id="i4"> 自动生成当下产品的sku或者毛利润
         <br><br>
 
-        毛利润 ： <input type="text" id="i5" readonly="readonly"> 自动生成当下产品的sku或者毛利率
+        毛利润 ： <input type="text" id="i5"> 自动生成当下产品的sku或者毛利率
         <br><br>
 
-        ROI平衡点 ： <input type="text" id="i6" readonly="readonly"> 你的ROI到底多少不亏呢？
+        ROI平衡点 ： <input type="text" id="i6"> 你的ROI到底多少不亏呢？
         <br><br>
 
         目前ROI ： <input type="text" id="i7"> 填写当前计划的投入产品比，建议至少7天数据
@@ -90,7 +90,9 @@
         盈亏结果判断 ： <input type="text"   id="i8" readonly="readonly"> 建议;如果不认亏，逐步降价，直到盈亏平衡
         <br><br>
 
-        <button type="button" id="cal" >计算</button>
+        <button type="button" id="cal" >计算ROI</button>
+
+        <button type="button" id="cal2" >计算售价</button>
 
         <script>
             let goodsList = new Array();
@@ -173,7 +175,7 @@
                 document.getElementById("i2").value = salePrice;
             }
 
-            function calculate(){
+            function calculateROI(){
                 // 输入
                 let i1V = document.getElementById("i1").value;
                 let i2V = document.getElementById("i2").value;
@@ -192,6 +194,25 @@
                 document.getElementById("i6").value = i6V.toFixed(4);
             }
 
+            function calculateSalePrice(){
+                // 输入
+                let i2V = document.getElementById("i2").value;
+                let i3V = document.getElementById("i3").value;
+                let i4V = document.getElementById("i4").value;
+                let i5V = document.getElementById("i5").value;
+                let i6V = document.getElementById("i6").value;
+                let i8V = document.getElementById("i8").value;
+
+                // 输出
+                let i1V = i4V * i6V;
+                
+
+                document.getElementById("i1").value = i1V.toFixed(4);
+                document.getElementById("i4").value = i4V.toFixed(4);
+                document.getElementById("i5").value = i5V.toFixed(4);
+                
+            }
+
             $(document).ready(function () {
                 var time = new Date();
                 var day = ("0" + time.getDate()).slice(-2);
@@ -202,7 +223,12 @@
 
             var btn = document.getElementById("cal");
             btn.addEventListener('click',function(){
-                calculate();
+                calculateROI();
+            },false)
+
+            var btn = document.getElementById("cal2");
+            btn.addEventListener('click',function(){
+                calculateSalePrice();
             },false)
         </script>
 	</body>
