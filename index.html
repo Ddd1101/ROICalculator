@@ -69,6 +69,9 @@
         售价 ： <input type="text"   id="i1" > 产品定价
         <br><br>
 
+        数量 ： <input type="text" value="1"  id="i9"> 数量
+        <br><br>
+
         成本 ： <input type="text"   id="i2" readonly="readonly"> 进货成本
         <br><br>
 
@@ -114,14 +117,14 @@
                     sheets = wb.Sheets[sheetName]   // 获sheet名页签下的数据
                     
                     // console.log(sheets);   // 返回sheet对象到控制台
-                    console.log(sheets.A12.v)
+                    // console.log(sheets.A12.v)
 
                     jsonRes = JSON.parse(JSON.stringify(XLSX.utils.sheet_to_json(sheets)));
 
-                    // console.log(jsonRes);
+                    console.log(jsonRes);
 
                     for(let i = 0; i < jsonRes.length; ++i){
-                        goodsList.push(jsonRes[i]['商品']);
+                        goodsList.push(jsonRes[i]['商品货号']);
                     }
                     addSelection();
                 };
@@ -144,11 +147,11 @@
 
                 let index = objSelect.options[objSelect.selectedIndex].value;
 
-                // console.log(index);
+                console.log(index);
 
-                // console.log(objSelect.selectedIndex);
+                console.log(objSelect.selectedIndex);
 
-                // console.log(jsonRes[objSelect.selectedIndex])
+                console.log(jsonRes[objSelect.selectedIndex])
 
                 jsonObj = jsonRes[objSelect.selectedIndex]
                 
@@ -183,8 +186,12 @@
 
                 let i8V = document.getElementById("i8").value;
 
+                let i9V = document.getElementById("i9").value;
+
                 // 输出
-                let i4V = i1V - i2V - i3V;
+                let i4V = i1V - (i2V * i9V) - i3V;
+                console.log(i2V * i9V);
+                console.log(i4V);
                 let i5V = (i4V * i1V)/100; 
                 let i6V = i1V / i4V;
 
